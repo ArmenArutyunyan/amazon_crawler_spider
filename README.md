@@ -27,7 +27,7 @@ Given the id of the item scraper extracts following fields:
 Script can be run either by using ` scrapy crawl amazon_spider` command or running `amazon_spider.py` itself.
 After running the script user will be asked to provide item_id in one of the following form:
 * item_id ( e.g B07Y91V9BK )
-* multiple item_ids seperated by comma ( e.g. B07Y91V9BK,B08KYNL6LH)
+* multiple item_ids seperated by comma ( e.g. B07Y91V9BK, B08KYNL6LH)
 * full path of a text file which has item_ids listed as rows
 
 As a result the aforementioned fields will be extracted and written in a JSON file named `amazon_spider.json` in spiders directory
