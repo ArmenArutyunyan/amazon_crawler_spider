@@ -95,7 +95,7 @@ class AmazonSpider(scrapy.Spider):
         ):
             temp_dict = dict()
             temp_dict["condition"] = offer[0]
-            temp_dict["price"] = offer[1]
+            temp_dict["price"] = self.price_analise(offer[1])
             temp_dict["shipping_price"] = offer[2]
             temp_dict["shipping_time"] = offer[-2]
             temp_dict["total_rating"] = offer[-1][0]
@@ -231,10 +231,13 @@ class AmazonSpider(scrapy.Spider):
 
     @staticmethod
     def price_analise(shipping_price_message: str):
-        if shipping_price_message.lower().__contains__("free"):
-            return 0
-        else:
-            return shipping_price_message.replace("$", "").split()[0]
+        try:
+            if shipping_price_message.lower().__contains__("free"):
+                return 0
+            else:
+                return shipping_price_message.replace("$", "").split()[0]
+        except Exception:
+            return shipping_price_message
 
     @staticmethod
     def status_analise(in_stock_status):
@@ -244,27 +247,33 @@ class AmazonSpider(scrapy.Spider):
 
     @staticmethod
     def time_calculator(shipping_time_message: str):
-        now = datetime.datetime.now()
-        if shipping_time_message.split()[-2] == "-":
-            shipping_month = datetime.datetime.strptime(
-                shipping_time_message.split()[0], "%b"
-            ).month
-        else:
-            shipping_month = datetime.datetime.strptime(
-                shipping_time_message.split()[-2], "%b"
-            ).month
-        shipping_day = int(shipping_time_message.split()[-1])
-        return (
-            datetime.date(now.year, shipping_month, shipping_day)
-            - datetime.date(now.year, now.month, now.day)
-        ).days
+        try:
+            now = datetime.datetime.now()
+            if shipping_time_message.split()[-2] == "-":
+                shipping_month = datetime.datetime.strptime(
+                    shipping_time_message.split()[0], "%b"
+                ).month
+            else:
+                shipping_month = datetime.datetime.strptime(
+                    shipping_time_message.split()[-2], "%b"
+                ).month
+            shipping_day = int(shipping_time_message.split()[-1])
+            return (
+                datetime.date(now.year, shipping_month, shipping_day)
+                - datetime.date(now.year, now.month, now.day)
+            ).days
+        except Exception:
+            return shipping_time_message
 
     @staticmethod
     def clean_ratings_feedbacks(data: list):
-        for info in data:
-            info[0] = info[0].split()[0].replace("(", "")
-            info[1] = info[1].split()[0].replace("%", "")
-        return data
+        try:
+            for info in data:
+                info[0] = info[0].split()[0].replace("(", "")
+                info[1] = info[1].split()[0].replace("%", "")
+            return data
+        except Exception:
+            return data
 
 
 if __name__ == "__main__":
